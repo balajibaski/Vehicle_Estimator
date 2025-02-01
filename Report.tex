@@ -1,0 +1,73 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}  % Required for align environment
+\usepackage{amssymb}
+\usepackage{float}    % Control figure placement
+\usepackage{tikz}     % Drawing and diagrams
+\usepackage{hyperref}
+
+\title{Assignment B3: State estimation}
+\author{Jestin, Cormaccar, Cornal and Balaji Baskaran}
+\date{23rd January 2025}
+
+\begin{document}
+
+\maketitle
+
+\section{State Space modeling}
+
+\subsection*{State Equation}
+The state equation represents the evolution of the system's state \( \mathbf{x}_t \) over time. Considering the system to be linear, the general form is given by kinematics law:
+\[
+\mathbf{x}_{t+1} = \mathbf{x}_t + T_s \mathbf{v}_{t}
+\]
+\[ \mathbf{v}_{t+1} = \mathbf{v}_{t} + \mathbf{w}_t\]
+
+For this system:
+\[
+\mathbf{x}_{t+1} = 
+\begin{bmatrix}
+1 & T_s \\
+0 & 1
+\end{bmatrix} \begin{bmatrix}
+   \mathbf{x}_t \\ \mathbf{v}_{t} 
+\end{bmatrix}
+ +
+\begin{bmatrix}
+0 \\
+1
+\end{bmatrix}
+W_t
+\]
+
+where:
+\begin{itemize}
+    \item \( \begin{bmatrix} \mathbf{x}_t \\ \mathbf{v}_{t} \end{bmatrix} \): State vector, where \( \mathbf{x}_t \) is the position and \( \mathbf{v}_{t} \) is the velocity.
+    \item \( T_s \): Sampling time.
+    \item \( W_t \): Process noise affecting the velocity.
+\end{itemize}
+
+\subsection*{Measurement Equation}
+The measurement equation represents the relationship between the observed variable \( z_t \) and the system's state \( \mathbf{x}_t \). The general form is:
+\[
+z_t = H \mathbf{x}_t + v_t
+\]
+
+For this system:
+\[
+z_t =
+\begin{bmatrix}
+1 & 0
+\end{bmatrix}
+\mathbf{x}_t + v_t
+\]
+
+where:
+\begin{itemize}
+    \item \( H = \begin{bmatrix} 1 & 0 \end{bmatrix} \): Measurement matrix.
+    \item \( v_t \): Measurement noise.
+\end{itemize}
+
+This model captures the system's dynamics and measurements, suitable for use in state estimation techniques like the Extended Kalman Filter (EKF).
+
+\end{document}
