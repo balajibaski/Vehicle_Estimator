@@ -8,7 +8,7 @@
 
 \title{Assignment B3: State estimation}
 \author{Jestin, Cormaccar, Cornal and Balaji Baskaran}
-\date{23rd January 2025}
+\date{6th Feburary 2025}
 
 \begin{document}
 
@@ -69,5 +69,86 @@ where:
 \end{itemize}
 
 This model captures the system's dynamics and measurements, suitable for use in state estimation techniques like the Extended Kalman Filter (EKF).
+
+
+\section*{Estimation using Extended Kalman Filter (EKF)}
+
+This model captures the system's dynamics and measurements, suitable for use in state estimation techniques like the Extended Kalman Filter (EKF). This filter uses the following equation to predict and update the system: 
+\subsection*{Prediction Step (Time Update)}
+\begin{align*}
+\hat{x}_{t|t-1} &= f(\hat{x}_{t-1|t-1}, 0) \\
+P_{t|t-1} &= A P_{t-1|t-1} A^T + Q
+\end{align*}
+where: 
+\begin{itemize}
+    \item \( \hat{x}_{t|t-1} \) is Predicted state estimate (before measurement update)
+    \item \( P_{t|t-1} \) is Predicted error covariance matrix
+    \item \( A \) is State transition matrix (Jacobian of \( f(x) \))
+    \item \( Q \) is Process noise covariance
+\end{itemize}
+\subsection*{Update Step (Measurement Update)}
+\begin{align*}
+K_t &= P_{t|t-1} C_t^T (C_t P_{t|t-1} C_t^T + R)^{-1} \\
+\hat{x}_{t|t} &= \hat{x}_{t|t-1} + K_t \left( y_t - h(\hat{x}_{t|t-1}) \right) \\
+P_{t|t} &= P_{t|t-1} - K_t C_t P_{t|t-1}
+\end{align*}
+where:
+\begin{itemize}
+    \item \( K_t \) is Kalman gain
+    \item \( C_t \) is Jacobian of the measurement function \( h(x) \)
+    \item \( R \) is Measurement noise covariance
+    \item \( \hat{x}_{t|t} \) is Updated state estimate after incorporating measurement \( y_t \)
+    \item \( P_{t|t} \) is Updated error covariance
+\end{itemize}
+The state model has been extended for the system represents an object moving in 2D space with:
+\begin{itemize}
+    \item Position \( (x,y) \).
+    \item Velocity \( (v_x,v_y) \).
+\end{itemize}
+The state equations are given as
+\[\mathbf{x}_{t+1} = \mathbf{x}_t + T_s \mathbf{v}_{x}\]
+\[\mathbf{y}_{t+1} = \mathbf{y}_t + T_s \mathbf{v}_{y}\]
+\[v_{\mathbf{x}_{t+1}} = \mathbf{v}_x + \mathbf{w}_{x}\]
+\[v_{\mathbf{y}_{t+1}} = \mathbf{v}_y + \mathbf{w}_{y}\]
+where:
+\begin{itemize}
+    \item \(T_s\) is sampling time.
+    \item \(\mathbf{w}_{x} \text{ and } \mathbf{w}_{y}\) are process noise affecting velocity.
+\end{itemize}
+This state vector \(\begin{bmatrix}
+    \mathbf{x}_t + T_s \mathbf{v}_{x} & \mathbf{y}_t + T_s \mathbf{v}_{y}
+& \mathbf{v}_x + \mathbf{w}_{x}
+& \mathbf{v}_y + \mathbf{w}_{y}
+\end{bmatrix}^T\) effectively captures both position and velocity, which are necessary for predicting future states in a dynamic system. The state transition matrix \(A\) is give as
+\[A = \begin{bmatrix}
+    1 & 0 & T_s & 0 \\ 0 & 0 & 0 & T_s \\
+0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \\ \end{bmatrix}\]
+In measurement model, since we do not measure the velocity directly, the function is only depended on the position \((x,y)\). It is given as
+\[
+\mathbf{z}_{t} = h( \mathbf{x}_t,\mathbf{u}_{t})
+\]
+where \(\mathbf{z}_{t} = \begin{bmatrix}
+    d_1 & d_2 & d_3
+\end{bmatrix}^T + \begin{bmatrix}
+    \mathbf{u}_1 & \mathbf{u}_2 & \mathbf{u}_3
+\end{bmatrix}^T\) and \(d_i\) is the Euclidean distance between the vehicle's position to the \(i^{th}\) beacon. As this is a non-linear function we use Jacobian matrix \((\frac{\partial h}{\partial \mathbf{x}})\) to linearize it for the EKF update.
+
+The estimation of the state of a system deals with uncertainties and arises from:
+\begin{itemize}
+    \item Process noise: The uncertainty in the system states and is given by the process noise covariance matrix \((Q)\).
+    \item Measurement noise: The uncertainty in the measurement is states and is given by the measurement noise covariance matrix \((R)\).
+\end{itemize}
+The extended process noise matrix \(Q 
+_{bar}\)is used for the full position-velocity state:
+\[Q_{bar} = \begin{bmatrix}
+    0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\
+0 & 0 & \mathbf{w}_{x} & 0 \\ 0 & 0 & 0 & \mathbf{w}_{y} \\ \end{bmatrix}\]
+The noise is added only in the velocity block and not in the position block because it does not affect the position. 
+
+The matrix \(R\) determines the noise of the sensor's readings and as there are 3 beacons, \(R\) can be represented as \(3 \times 3\) diagonal matrix, which is:
+\[R = \begin{bmatrix}
+     \mathbf{u}_1 & 0 & 0 \\ 0 & \mathbf{u}_2 & 0 \\
+0 & 0 & \mathbf{u}_3  \end{bmatrix}\]
+The filter is calculated using python running for 50 iterations which computes measurement prediction and updates the state estimate using the EKF update equations and the next state is predicted using system dynamics.
 
 \end{document}
