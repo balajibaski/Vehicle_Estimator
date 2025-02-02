@@ -17,6 +17,7 @@
 \section*{State Space modeling}
 
 \subsection*{State Equation}
+% i think we have to change the dynamics, since in theory we are doing in a 2-D plane the dynamics will also change right, so based on the A matrix in therory we have to change the system dynamics as well
 The state equation represents the evolution of the system's state \( \mathbf{x}_t \) over time. Considering the system to be linear, the general form is given by kinematics law:
 \[
 \mathbf{x}_{t+1} = \mathbf{x}_t + T_s \mathbf{v}_{t}
@@ -118,8 +119,10 @@ This state vector \(\begin{bmatrix}
 & \mathbf{v}_y + \mathbf{w}_{y}
 \end{bmatrix}^T\) effectively captures both position and velocity, which are necessary for predicting future states in a dynamic system. The state transition matrix \(A\) is give as
 \[A = \begin{bmatrix}
-    1 & 0 & T_s & 0 \\ 0 & 0 & 0 & T_s \\
-0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \\ \end{bmatrix}\]
+    1 & 0 & T_s & 0 \\ 
+    0 & 1 & 0 & T_s \\
+    0 & 0 & 1 & 0 \\
+    0 & 0 & 0 & 1 \\ \end{bmatrix}\]
 In measurement model, since we do not measure the velocity directly, the function is only depended on the position \((x,y)\). It is given as
 \[
 \mathbf{z}_{t} = h( \mathbf{x}_t,\mathbf{u}_{t})
@@ -137,12 +140,14 @@ The estimation of the state of a system deals with uncertainties and arises from
 \end{itemize}
 The extended process noise matrix \(Q 
 _{bar}\)is used for the full position-velocity state:
+% also I think we can do exactly as how its given in the notes, like giving the equation of  Q_bar and A. Then we can say that since the system is linear, that the Jacobian becomes the A matrix and Q_bar is givrn by the formula Q_bar = GQG^T
 \[Q_{bar} = \begin{bmatrix}
     0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\
 0 & 0 & \mathbf{w}_{x} & 0 \\ 0 & 0 & 0 & \mathbf{w}_{y} \\ \end{bmatrix}\]
 The noise is added only in the velocity block and not in the position block because it does not affect the position. 
 
 The matrix \(R\) determines the noise of the sensor's readings and as there are 3 beacons, \(R\) can be represented as \(3 \times 3\) diagonal matrix, which is:
+% Check the R matrix once more, it the noise variance of the measurement and i have made it as a identity matrix
 \[R = \begin{bmatrix}
      \mathbf{u}_1 & 0 & 0 \\ 0 & \mathbf{u}_2 & 0 \\
 0 & 0 & \mathbf{u}_3  \end{bmatrix}\]
