@@ -14,7 +14,7 @@
 
 \maketitle
 
-\section{State Space modeling}
+\section*{State Space modeling}
 
 \subsection*{State Equation}
 The state equation represents the evolution of the system's state \( \mathbf{x}_t \) over time. Considering the system to be linear, the general form is given by kinematics law:
@@ -37,39 +37,36 @@ For this system:
 0 \\
 1
 \end{bmatrix}
-W_t
+\mathbf{w}_{t}
 \]
 
 where:
 \begin{itemize}
     \item \( \begin{bmatrix} \mathbf{x}_t \\ \mathbf{v}_{t} \end{bmatrix} \): State vector, where \( \mathbf{x}_t \) is the position and \( \mathbf{v}_{t} \) is the velocity.
     \item \( T_s \): Sampling time.
-    \item \( W_t \): Process noise affecting the velocity.
+    \item \( \mathbf{w}_{t} \): Process noise affecting the velocity.
 \end{itemize}
 
 \subsection*{Measurement Equation}
-The measurement equation represents the relationship between the observed variable \( z_t \) and the system's state \( \mathbf{x}_t \). The general form is:
+The measurement equation represents the relationship between the observed variable \( \mathbf{z}_{t} \) and the system's state \( \mathbf{x}_t \). The general form is:
 \[
-z_t = H \mathbf{x}_t + v_t
+\mathbf{z}_{t} = H \mathbf{x}_t + \mathbf{u}_{t}
 \]
 
 For this system:
 \[
-z_t =
+\mathbf{z}_{t} =
 \begin{bmatrix}
 1 & 0
 \end{bmatrix}
-\mathbf{x}_t + v_t
+\mathbf{x}_t + \mathbf{u}_{t}
 \]
 
 where:
 \begin{itemize}
     \item \( H = \begin{bmatrix} 1 & 0 \end{bmatrix} \): Measurement matrix.
-    \item \( v_t \): Measurement noise.
+    \item \( \mathbf{u}_{t} \): Measurement noise.
 \end{itemize}
-
-This model captures the system's dynamics and measurements, suitable for use in state estimation techniques like the Extended Kalman Filter (EKF).
-
 
 \section*{Estimation using Extended Kalman Filter (EKF)}
 
@@ -149,6 +146,6 @@ The matrix \(R\) determines the noise of the sensor's readings and as there are 
 \[R = \begin{bmatrix}
      \mathbf{u}_1 & 0 & 0 \\ 0 & \mathbf{u}_2 & 0 \\
 0 & 0 & \mathbf{u}_3  \end{bmatrix}\]
-The filter is calculated using python running for 50 iterations which computes measurement prediction and updates the state estimate using the EKF update equations and the next state is predicted using system dynamics.
+The filter is calculated using python running for 50 iterations which computes measurement prediction and updates the state estimate using the EKF update equations and the next state is predicted using system dynamics. 
 
 \end{document}
