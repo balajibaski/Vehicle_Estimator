@@ -153,4 +153,97 @@ The matrix \(R\) determines the noise of the sensor's readings and as there are 
 0 & 0 & \mathbf{u}_3  \end{bmatrix}\]
 The filter is calculated using python running for 50 iterations which computes measurement prediction and updates the state estimate using the EKF update equations and the next state is predicted using system dynamics. 
 
+\section*{Track Geometry}
+The track consists of two arcs of a circle and two linear segments, representing a transition between one motion regime and another.
+
+\subsection*{Track Sections}
+
+\paragraph{First Circular Motion (Radius $r_A = 48$)}
+The object moves in a counterclockwise direction along a circular path with a radius of 48 units. The interval of angles covers:
+\begin{equation}
+\theta = 0 \text{ to } \theta_1.
+\end{equation}
+The transition occurs at:
+\begin{equation}
+\theta_1 = 15^\circ,
+\end{equation}
+where the motion changes from circular to straight-line motion.
+
+\paragraph{First Straight-Line Motion}
+After the first circular segment, the object travels in a straight line at constant velocity:
+\begin{equation}
+v = 10 \text{ units/sec}.
+\end{equation}
+The endpoint of the linear segment is defined by a transition time preset.
+
+\paragraph{Second Circular Motion (Radius $r_B = 22$)}
+The object now traverses a smaller arc in a clockwise fashion with:
+\begin{equation}
+r_B = 22.
+\end{equation}
+The object follows an angular displacement up to:
+\begin{equation}
+\theta_B = 140^\circ.
+\end{equation}
+
+\paragraph{Second Straight-Line Motion}
+Similar to the first linear segment, the second linear motion proceeds at a constant speed in a straight line. This segment ends at the beginning of the final circular arc.
+
+\paragraph{Final Circular Motion (Radius $r_A = 48$)}
+The object returns to a circular motion with the original radius:
+\begin{equation}
+r_A = 48.
+\end{equation}
+The angular displacement is:
+\begin{equation}
+\theta_5 = 250^\circ.
+\end{equation}
+The track closes back to the starting point.
+
+\subsection*{Transition Points}
+The transition points between circular and linear motion are defined by the angles and distances:
+\begin{equation}
+(x_1, y_1), (x_2, y_2), (x_3, y_3), (x_4, y_4)
+\end{equation}
+mark the end/start of circular and linear segments. These values were manually measured in the code.
+
+\subsection*{Key Observations}
+The circular segments follow the equations of a circle:
+\begin{equation}
+    x = r \cos(\theta), \quad y = r \sin(\theta).
+\end{equation}
+The linear segments follow simple kinematic equations:
+\begin{equation}
+    x = x_0 + v \cos(\theta) \cdot t, \quad y = y_0 + v \sin(\theta) \cdot t.
+\end{equation}
+The transition between sections is controlled by predefined transition times.
+
+\section*{Time Discretization}
+Time discretization is essential for simulating the motion numerically. Instead of treating time as a continuous variable, it is divided into small intervals.
+
+\subsection*{How Discretization is Implemented}
+\paragraph{Total Simulation Time}
+The total simulation time is set to 43 seconds.
+
+\paragraph{Number of Time Steps}
+The motion is discretized into 500 intervals:
+More intervals mean higher accuracy, but also more computations.
+
+\paragraph{Time Step}
+The time step is calculated as:
+\begin{equation}
+dt = \frac{\text{total time}}{\text{number of time steps}}
+\end{equation}
+
+This ensures that the simulation updates at regular time intervals.
+
+\paragraph{Time Array ($t$)}
+A numpy array stores the discrete time points:
+This divides the total time into evenly spaced points for simulation.
+
+\subsection*{Importance of time Discretization}
+Larger time step ($dt$) can also speed up the computation, which means that the simulation will become more efficient. But this does not improve accuracy; it would lose significant details of the motion with a larger $dt$, causing poor tracking of fast-moving objects and possible instability of the results.
+
+However, one needs to balance the efficiency of computing and the infidelity-induced errors, and such a decision would be application-dependent and require definition of the desired level of precision in tracking the motion with the corresponding choice of $dt$.
+
 \end{document}
