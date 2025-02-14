@@ -1,10 +1,12 @@
-\documentclass{article}
+\documentclass[a4paper,11pt]{article}
 \usepackage{graphicx} % Required for inserting images
 \usepackage{amsmath}  % Required for align environment
 \usepackage{amssymb}
 \usepackage{float}    % Control figure placement
 \usepackage{tikz}     % Drawing and diagrams
 \usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=1in}
 
 \title{Assignment B3: State estimation}
 \author{Jestin, Cormaccar, Cornal and Balaji Baskaran}
@@ -18,12 +20,27 @@
 
 \subsection*{State Equation}
 % i think we have to change the dynamics, since in theory we are doing in a 2-D plane the dynamics will also change right, so based on the A matrix in therory we have to change the system dynamics as well
-The state equation represents the evolution of the system's state \( \mathbf{x}_t \) over time. Considering the system to be linear, the general form is given by kinematics law:
-\[
-\mathbf{x}_{t+1} = \mathbf{x}_t + T_s \mathbf{v}_{t}
-\]
-\[ \mathbf{v}_{t+1} = \mathbf{v}_{t} + \mathbf{w}_t\]
+The state equation represents the evolution of the system's state \( \mathbf{x}_t \) over time. We assume the system to follow a \textbf{ constant turn rate and velocity (CTRV) },  with state vector $\mathbf{x} = [x, y, v, \theta]^T$, where $\theta$ is the heading angle.
+\subsection*{State Transition Equations}
+\begin{align*}
+    x_{k+1} &= x_k + v_k \cos(\theta_k) \Delta t \\
+    y_{k+1} &= y_k + v_k \sin(\theta_k) \Delta t \\
+    v_{k+1} &= v_k \quad \text{(constant velocity)} \\
+    \theta_{k+1} &= \theta_k + \omega \Delta t \quad \text{(constant angular velocity)}
+\end{align*}
+Here, $\omega = 1$ rad/s is \textbf{incorrectly assumed} in the code (does not match true $\omega_A$ or $\omega_B$).
 
+\subsection*{Linearized State Transition Matrix ($F$)}
+\begin{equation*}
+    F =
+    \begin{bmatrix}
+        1 & 0 & \cos(\theta)\Delta t & -v \sin(\theta)\Delta t \\
+        0 & 1 & \sin(\theta)\Delta t & v \cos(\theta)\Delta t \\
+        0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 1
+    \end{bmatrix}
+\end{equation*}
+Derived from the Jacobian of the nonlinear motion model.
 For this system:
 \[
 \mathbf{x}_{t+1} = 
@@ -41,18 +58,15 @@ For this system:
 \mathbf{w}_{t}
 \]
 
-where:
-\begin{itemize}
-    \item \( \begin{bmatrix} \mathbf{x}_t \\ \mathbf{v}_{t} \end{bmatrix} \): State vector, where \( \mathbf{x}_t \) is the position and \( \mathbf{v}_{t} \) is the velocity.
-    \item \( T_s \): Sampling time.
-    \item \( \mathbf{w}_{t} \): Process noise affecting the velocity.
-\end{itemize}
-
-\subsection*{Measurement Equation}
-The measurement equation represents the relationship between the observed variable \( \mathbf{z}_{t} \) and the system's state \( \mathbf{x}_t \). The general form is:
-\[
-\mathbf{z}_{t} = H \mathbf{x}_t + \mathbf{u}_{t}
-\]
+\subsection*{Measurement Model}
+\begin{equation*}
+    \mathbf{z} = H\mathbf{x} + \mathbf{w}, \quad H =
+    \begin{bmatrix}
+        1 & 0 & 0 & 0 \\
+        0 & 1 & 0 & 0
+    \end{bmatrix}
+\end{equation*}
+This measures noisy $(x, y)$ positions directly.
 
 For this system:
 \[
