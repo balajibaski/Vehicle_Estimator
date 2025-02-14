@@ -260,4 +260,25 @@ Larger time step ($dt$) can also speed up the computation, which means that the 
 
 However, one needs to balance the efficiency of computing and the infidelity-induced errors, and such a decision would be application-dependent and require definition of the desired level of precision in tracking the motion with the corresponding choice of $dt$.
 
+\section*{Results and Discussions}
+
+\subsection*{Trajectory Plot}
+The trajectory plot shows the motion of the object along the track and indicates transitions from circular to linear motion. The visual representation given below in figure \ref{fig:1}, portrays the overall motion pattern and enables the assessment of numerical simulation accuracy. 
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{B3_pics/Circular_to_Linear.png}
+    \caption{Timetable of the Project}
+    \label{fig:1}
+\end{figure}
+Smoothness of the trajectory depends on time step size and filtering used for state estimation. 
+
+\subsection*{Impact of Noise on the Filter}
+In addition to introducing perturbations in location estimations that diverge from the real trajectory, measurement noise also compromises the accuracy of the Kalman filter. The filter may result in unstable estimates and contribute to unpredictable corrections during state updates when the noise level is really high. A properly calibrated Kalman filter reduces noise while maintaining sensitivity to erratic abrupt motion changes.
+
+\subsection*{Approximation Challenges}
+One of the primary challenges of motion tracking is that non-linear dynamics must often be approximated by linear estimation models. In this case, the Kalman filter assumes an error distribution that is Gaussian and a linearized model of state transition that does not necessarily correspond to actual dynamics (especially during sharp transitions between circular and linear motion). These approximations will introduce an inconsistency between the performance of simulated and actual trajectories and tracking accuracy. 
+
+\subsection*{Future Enhancement}
+To improve accuracy and robustness in state estimation, enhancements like Moving horizon estimator can be implemented. The reason, MHE is more accurate than EKF as that improves estimation by using a window of historical measurements when the measures are available as sets. MHE solves an optimization issue at each iteration, producing a better approximation of non-linear dynamics than the EKF, which updates recursively in local updates. Additionally, EKF is prescriptive for fixed Gaussian noise, which may not function well in most real-world scenarios, whereas MHE fully handles noise fluctuation. Stimulated states and input limitations, which ensure that estimations are physically possible—a luxury that EKF lacks—are another benefit of MHE scanners. 
+
 \end{document}
