@@ -10,12 +10,12 @@
 
 \title{Assignment B3: State estimation}
 \author{Jestin, Cormaccar, Conal and Balaji Baskaran}
-\date{6th Feburary 2025}
+\date{15th Feburary 2025}
 
 \begin{document}
 
 \maketitle
-
+The Repository link: \href{https://github.com/balajibaski/Vehicle_Estimator/tree/main}{Vehicle Estimator}
 \section*{State Space modeling}
 
 \subsection*{State Equation}
@@ -31,6 +31,7 @@ The state equation represents the evolution of the system's state \( \mathbf{x}_
 Here, $\omega = 1$ rad/s is \textbf{incorrectly assumed} in the code (does not match true $\omega_A$ or $\omega_B$).
 
 \subsection*{Linearized State Transition Matrix ($F$)}
+The state transition matrix $F$ is responsible for propagating the state forward in time based on the system's motion model. It is defined as:
 \begin{equation*}
     F =
     \begin{bmatrix}
@@ -40,6 +41,7 @@ Here, $\omega = 1$ rad/s is \textbf{incorrectly assumed} in the code (does not m
         0 & 0 & 0 & 1
     \end{bmatrix}
 \end{equation*}
+where $v$ is the velocity and $dt$ is the time step.
 Derived from the Jacobian of the nonlinear motion model.
 For this system:
 \[
@@ -58,11 +60,21 @@ For this system:
 \mathbf{w}_{t}
 \]
 
+\subsection*{Process Noise Covariance Matrix ($Q$)}
+The process noise covariance matrix $Q$ models the uncertainty in the motion model, accounting for variations in position and orientation:
+\begin{equation}
+Q = \begin{bmatrix}
+\sigma_x^2 & 0 & 0 \\
+0 & \sigma_y^2 & 0 \\
+0 & 0 & \sigma_\theta^2
+\end{bmatrix}
+\end{equation}
+where $\sigma_x^2$, $\sigma_y^2$, and $\sigma_\theta^2$ represent the variances of position and heading noise, respectively. This matrix helps to balance prediction confidence and measurement updates.
+
 \subsection*{Measurement Model}
 \begin{equation*}
     \mathbf{z} = H\mathbf{x} + \mathbf{w}, \quad 
     \end{equation*}
-
 
 where:
 \[
@@ -74,7 +86,6 @@ H =
 \end{bmatrix}
 \text{and } d_i = \sqrt{(x - b_{xi})^2 + (y - b_{yi})^2}
 \]
-
 
 \section*{Estimation using Extended Kalman Filter (EKF)}
 
@@ -293,7 +304,7 @@ We were able to create a system dynamics that simulates the motion of the vehicl
 
 \begin{figure} [H]
     \centering
-    \includegraphics[width=0.8\linewidth]{Figure_1.png}
+    \includegraphics[width=0.8\linewidth]{B3_pics/Figure_1.png}
     \caption{True Dynamics of the vehicle}
     \label{fig:1}
 \end{figure}
@@ -301,7 +312,7 @@ We were able to create a system dynamics that simulates the motion of the vehicl
 Using this Dynamics, we tried to estimate the system using Kalamn Filter, considering there are no beacons, and we get the accurate measurements.
 \begin{figure} [H]
     \centering
-    \includegraphics[width=0.8\linewidth]{Figure_2.png}
+    \includegraphics[width=0.8\linewidth]{B3_pics/Figure_2.png}
     \caption{Estimation using Kalaman Filter}
     \label{fig:2}
 \end{figure}
@@ -310,7 +321,7 @@ Using this Dynamics, we tried to estimate the system using Kalamn Filter, consid
 
 \begin{figure} [H]
     \centering
-    \includegraphics[width=0.8\linewidth]{Figure_3.png}
+    \includegraphics[width=0.8\linewidth]{B3_pics/Figure_3.png}
     \caption{Estimation using Extended Kalaman Filter}
     \label{fig:3}
 \end{figure}
@@ -319,7 +330,7 @@ To handle constraints and non-linear dynamics, one of the estimator to be used i
 
 \begin{figure} [H]
     \centering
-    \includegraphics[width=0.8\linewidth]{Figure_4.png}
+    \includegraphics[width=0.8\linewidth]{B3_pics/Figure_4.png}
     \caption{Estimation using Moving Horizon Estimator}
     \label{fig:4}
 \end{figure}
@@ -327,7 +338,7 @@ To handle constraints and non-linear dynamics, one of the estimator to be used i
 
 
 \subsection*{Trajectory Plot}
-The trajectory plot shows the motion of the object along the track and indicates transitions from circular to linear motion. The visual representation given below in figure \ref{fig:1}, portrays the overall motion pattern and enables the assessment of numerical simulation accuracy. 
+The trajectory plot shows the motion of the object along the track and indicates transitions from circular to linear motion. The visual representation, portrays the overall motion pattern and enables the assessment of numerical simulation accuracy. 
 %\begin{figure} [H]
 %    \centering
 %    \includegraphics[width=0.8\linewidth]{B3_pics/Circular_to_Linear.png}
@@ -343,6 +354,10 @@ In addition to introducing perturbations in location estimations that diverge fr
 One of the primary challenges of motion tracking is that non-linear dynamics must often be approximated by linear estimation models. In this case, the Kalman filter assumes an error distribution that is Gaussian and a linearized model of state transition that does not necessarily correspond to actual dynamics (especially during sharp transitions between circular and linear motion). These approximations will introduce an inconsistency between the performance of simulated and actual trajectories and tracking accuracy. 
 
 \subsection*{Future Enhancement}
-To improve accuracy and robustness in state estimation, enhancements like Moving horizon estimator can be implemented. The reason, MHE is more accurate than EKF as that improves estimation by using a window of historical measurements when the measures are available as sets. MHE solves an optimization issue at each iteration, producing a better approximation of non-linear dynamics than the EKF, which updates recursively in local updates. Additionally, EKF is prescriptive for fixed Gaussian noise, which may not function well in most real-world scenarios, whereas MHE fully handles noise fluctuation. Stimulated states and input limitations, which ensure that estimations are physically possible—a luxury that EKF lacks—are another benefit of MHE scanners. 
+To improve accuracy and robustness in state estimation, Moving Horizon Estimator (MHE) can be implemented. A simple dynamics MHE is performed in the script:
+\begin{verbatim}
+"MHE_simple_dynamics.py"
+\end{verbatim}
+in the repository and the reason, MHE is more accurate than EKF as that improves estimation by using a window of historical measurements when the measures are available as sets. MHE solves an optimization issue at each iteration, producing a better approximation of non-linear dynamics than the EKF, which updates recursively in local updates. Additionally, EKF is prescriptive for fixed Gaussian noise, which may not function well in most real-world scenarios, whereas MHE fully handles noise fluctuation. Stimulated states and input limitations, which ensure that estimations are physically possible—a luxury that EKF lacks—are another benefit of MHE scanners. 
 
 \end{document}
